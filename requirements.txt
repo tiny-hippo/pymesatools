@@ -1,0 +1,4 @@
+numpy
+matplotlib
+f90nml
+mesa_reader
