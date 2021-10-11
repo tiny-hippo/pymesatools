@@ -5,7 +5,7 @@ import f90nml
 from pathlib import Path
 from collections import OrderedDict
 from typing import Tuple
-from mesatools.support.definitions import *
+from mesatools.utils.definitions import *
 
 
 class MesaAccess:
