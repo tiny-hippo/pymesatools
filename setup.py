@@ -7,7 +7,7 @@ setup(
     url="https://github.com/tiny-hippo/pyMesaToolbox",
     author="Simon Müller",
     author_email="simon.mueller7@uzh.ch",
-    license="MIT",
+    license="GNU GPLv3",
     packages=["mesatools"],
     install_requires=["numpy", "matplotlib", "f90nml", "mesa_reader"]
 )
