@@ -10,20 +10,19 @@ sectionStarJob = "star_job"
 sectionEos = "eos"
 sectionKap = "kap"
 
-
 defaultsDict = {
     "controls": controlsDefaults,
     "pgstar": pgstarDefaults,
     "star_job": star_jobDefaults,
     "eos": eosDefaults,
-    "kap": kapDefaults
+    "kap": kapDefaults,
 }
 sectionDict = {
     "controls": sectionControls,
     "pgstar": sectionPgStar,
     "star_job": sectionStarJob,
     "eos": sectionEos,
-    "kap": sectionKap
+    "kap": sectionKap,
 }
 
 mesaEnv = "MESA_DIR"

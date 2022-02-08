@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name="mesatools",
@@ -8,6 +8,6 @@ setup(
     author="Simon Müller",
     author_email="simon.mueller7@uzh.ch",
     license="GNU GPLv3",
-    packages=["mesatools"],
+    packages=find_packages(include=["mesatools", "mesatools.*"]),
     install_requires=["numpy", "matplotlib", "f90nml", "mesa_reader"]
 )

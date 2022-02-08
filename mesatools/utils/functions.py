@@ -1,9 +1,9 @@
 import os
 import glob
-from mesatools.access import MesaAccess
+from mesatools.inlist import MesaInlist
 
 
-def get_X(Z):
+def get_X(Z: float):
     """Calculates the hydrogen fraction given
         a heavy-element fraction Z and assuming protosolar
         composition.
@@ -23,7 +23,7 @@ def get_X(Z):
     return X
 
 
-def get_Y(Z):
+def get_Y(Z: float):
     """Calculates the helium fraction given
         a heavy-element fraction Z and assuming protosolar
         composition.
@@ -38,14 +38,18 @@ def get_Y(Z):
     return round(1 - Z - X, 3)
 
 
-def get_latest_log(infile, mesaVersion=15140):
+def get_latest_log(infile: str, legacyInlist: bool = False):
     """Gets the most recent profile filename from the
     LOGS directory.
 
         Returns:
             latest_log (str): filename of most recent profile
     """
-    ma = MesaAccess(infile, "foo.bar", mesaVersion)
+    ma = MesaInlist(
+        infile=infile,
+        outfile="foo",
+        legacyInlist=legacyInlist,
+    ).inlist
     try:
         log_prefix = ma["profile_data_prefix"]
     except KeyError:

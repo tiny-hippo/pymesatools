@@ -100,7 +100,7 @@ class MesaRunner:
             self.remove_file("inlist")
         self.remove_file("restart_photo")
         copy2(self.inlist, "inlist")
-        ma = MesaInlist(
+        inList = MesaInlist(
             infile="inlist",
             outfile="inlist",
             expandVectors=self.expandVectors,
@@ -108,6 +108,7 @@ class MesaRunner:
             useMesaenv=self.useMesaenv,
             legacyInlist=self.legacyInlist,
         )
+        ma = inList.inlist
         self.model_name = ma["save_model_filename"]
         try:
             self.profile_name = ma["filename_for_profile_when_terminate"]
@@ -130,7 +131,7 @@ class MesaRunner:
             ma["pgstar_flag"] = False
 
         if self.pause or self.pgstar:
-            ma.writeInlist()
+            inList.writeInlist()
 
         self.remove_file(self.model_name)
         self.remove_file(self.profile_name)
@@ -247,12 +248,12 @@ class MesaRunner:
         if not (self.profile_name):
             ma = MesaInlist(
                 infile="inlist",
-                outfile="inlist",
+                outfile="foo",
                 expandVectors=self.expandVectors,
                 reloadDefaults=self.reloadDefaults,
                 useMesaenv=self.useMesaenv,
                 legacyInlist=self.legacyInlist,
-            )
+            ).inlist
             self.profile_name = ma["filename_for_profile_when_terminate"]
 
         dst = os.path.join(dir_name, self.profile_name)

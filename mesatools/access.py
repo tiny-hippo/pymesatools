@@ -5,7 +5,7 @@ import f90nml
 from pathlib import Path
 from collections import OrderedDict
 from typing import Tuple
-from mesatools.utils.definitions import *
+from .utils.definitions import *
 
 
 class MesaAccess:
@@ -26,7 +26,7 @@ class MesaAccess:
         expandVectors: bool = True,
         reloadDefaults: bool = False,
         useMesaenv: bool = True,
-        legacyInlist: bool = False
+        legacyInlist: bool = False,
     ) -> None:
 
         self.infile = infile
@@ -219,7 +219,10 @@ class MesaAccess:
             else:
                 defaultsDir = Path(__file__).parent / "defaults/mesa-r10108/"
                 pickleDir = Path(__file__).parent / "defaults/mesa-r10108/"
+
         tempDir = Path(__file__).parent / "defaults/"
+        if not os.path.isdir(tempDir):
+            os.mkdir(tempDir)
 
         if whichDefaults not in defaultsDict.keys():
             raise BaseException(whichDefaults, "is not a valid option")
