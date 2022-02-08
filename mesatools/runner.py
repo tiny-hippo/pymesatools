@@ -7,7 +7,7 @@ import numpy as np
 import mesa_reader as mr
 from shutil import copy2, move
 from distutils.dir_util import copy_tree
-from mesatools.access import MesaAccess
+from mesatools.inlist import MesaInlist
 
 
 class MesaRunner:
@@ -28,31 +28,31 @@ class MesaRunner:
 
     def __init__(
         self,
-        infile,
-        mesaVersion=15140,
-        expandVectors=True,
-        reloadDefaults=False,
-        useMesaenv=True,
-        pgstar=True,
-        pause=True,
+        infile: str,
+        pgstar: bool = True,
+        pause: bool = True,
+        expandVectors: bool = True,
+        reloadDefaults: bool = False,
+        useMesaenv: bool = True,
+        legacyInlist: bool = True,
     ):
         """__init__ method
 
         Args:
             infile (str): Name of the inlist used in the run.
-            mesaVersion (int): MESA release version.
+            pgstar (bool): Enable/disable pgstar.
+            pause (bool): Enable/disable waiting for user input at the end.
             expandVectors (bool): Expand fortran vectors in the inlist.
             reloadDefaults (bool): Reload default inlist files.
             useMesaenv (bool): Use MESA_ENV environment variable.
-            pgstar (bool): Enable/disable pgstar.
-            pause (bool): Enable/disable waiting for user input at the end.
+            legacyInlist (bool): Legacy inlist (before mesa-r15140).
         """
         self.inlist = infile
         self.last_inlist = infile
-        self.mesaVersion = mesaVersion
         self.expandVectors = expandVectors
         self.reloadDefaults = reloadDefaults
         self.useMesaenv = useMesaenv
+        self.legacyInlist = legacyInlist
         self.pause = pause
         self.pgstar = pgstar
         self.model_name = ""
@@ -66,7 +66,7 @@ class MesaRunner:
         else:
             self.summary = False
 
-    def run(self, check_age=True):
+    def run(self, check_age: bool = True):
         """Runs either a single inlist or a list of inlists.
 
         args:
@@ -85,7 +85,7 @@ class MesaRunner:
         else:
             self.run_support(self.inlist, check_age)
 
-    def run_support(self, inlist, check_age):
+    def run_support(self, inlist: str, check_age: bool):
         """Helper function for running MESA.
 
         Args:
@@ -100,13 +100,13 @@ class MesaRunner:
             self.remove_file("inlist")
         self.remove_file("restart_photo")
         copy2(self.inlist, "inlist")
-        ma = MesaAccess(
-            "inlist",
-            "inlist",
-            self.mesaVersion,
-            self.expandVectors,
-            self.reloadDefaults,
-            self.useMesaenv,
+        ma = MesaInlist(
+            infile="inlist",
+            outfile="inlist",
+            expandVectors=self.expandVectors,
+            reloadDefaults=self.reloadDefaults,
+            useMesaenv=self.useMesaenv,
+            legacyInlist=self.legacyInlist,
         )
         self.model_name = ma["save_model_filename"]
         try:
@@ -130,7 +130,7 @@ class MesaRunner:
             ma["pgstar_flag"] = False
 
         if self.pause or self.pgstar:
-            ma.writeFile()
+            ma.writeInlist()
 
         self.remove_file(self.model_name)
         self.remove_file(self.profile_name)
@@ -206,7 +206,7 @@ class MesaRunner:
                 print(42 * "%")
                 self.convergence = False
 
-    def restart(self, photo):
+    def restart(self, photo: str):
         """Restarts the run from the given photo.
 
         Args:
@@ -222,7 +222,7 @@ class MesaRunner:
             print(photo_path, "not found")
 
     def restart_latest(self):
-        """ Restarts the run from the latest photo. """
+        """Restarts the run from the latest photo."""
         old_path = os.getcwd()
         new_path = os.path.expanduser("photos")
         os.chdir(new_path)
@@ -238,20 +238,20 @@ class MesaRunner:
         else:
             print("No photo found.")
 
-    def copy_logs(self, dir_name):
+    def copy_logs(self, dir_name: str):
         """Save the current logs and profile.
 
         Args:
             dir_name (str): Destination to copy the logs to.
         """
         if not (self.profile_name):
-            ma = MesaAccess(
-                self.inlist,
-                "_",
-                self.mesaVersion,
-                self.expandVectors,
-                self.reloadDefaults,
-                self.useMesaenv,
+            ma = MesaInlist(
+                infile="inlist",
+                outfile="inlist",
+                expandVectors=self.expandVectors,
+                reloadDefaults=self.reloadDefaults,
+                useMesaenv=self.useMesaenv,
+                legacyInlist=self.legacyInlist,
             )
             self.profile_name = ma["filename_for_profile_when_terminate"]
 
@@ -262,12 +262,14 @@ class MesaRunner:
 
     @staticmethod
     def make():
-        """ Builds the star executable. """
+        """Builds the star executable."""
         print("Building star")
         subprocess.call("./mk")
 
     @staticmethod
-    def cleanup(keep_png=False, keep_logs=False, keep_photos=True):
+    def cleanup(
+        keep_png: bool = False, keep_logs: bool = False, keep_photos: bool = True
+    ):
         """Cleans the photos, png and logs directories.
 
         Args:
@@ -299,7 +301,7 @@ class MesaRunner:
                     os.remove(os.path.join(dir_name, item))
 
     @staticmethod
-    def remove_file(file_name):
+    def remove_file(file_name: str):
         """Safely removes a file.
 
         Args:

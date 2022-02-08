@@ -13,42 +13,42 @@ class MesaAccess:
     Args:
         infile (str): Name of the inlist to use as a source.
         outfile (str): Name of the output file.
-        mesaVersion (int): MESA release version.
         expandVectors (bool): Expand fortran vectors in the inlist.
         reloadDefaults (bool): Reload default inlist files.
         useMesaenv (bool): Use MESA_ENV environment variable.
+        legacyInlist (bool): Legacy inlist (before mesa-r15140).
     """
 
     def __init__(
         self,
-        infile,
-        outfile,
-        mesaVersion=15140,
-        expandVectors=True,
-        reloadDefaults=False,
-        useMesaenv=False,
+        infile: str,
+        outfile: str,
+        expandVectors: bool = True,
+        reloadDefaults: bool = False,
+        useMesaenv: bool = True,
+        legacyInlist: bool = False
     ) -> None:
 
         self.infile = infile
         self.outfile = outfile
-        self.mesaVersion = mesaVersion
         self.expandVectors = expandVectors
         self.reloadDefaults = reloadDefaults
         self.useMesaenv = useMesaenv
+        self.legacyInlist = legacyInlist
         self.nml = f90nml.read(self.infile)
         self.nml.float_format = ".3e"
 
         self.controls = self.getDefaults("controls")
         self.pgstar = self.getDefaults("pgstar")
         self.star_job = self.getDefaults("star_job")
-        if self.mesaVersion >= 15140:
+        if not self.legacyInlist:
             self.eos = self.getDefaults("eos")
             self.kap = self.getDefaults("kap")
 
         self.controls_keys = self.controls[sectionControls].keys()
         self.pgstar_keys = self.pgstar[sectionPgStar].keys()
         self.star_job_keys = self.star_job[sectionStarJob].keys()
-        if self.mesaVersion >= 15140:
+        if not self.legacyInlist:
             self.eos_keys = self.eos[sectionEos].keys()
             self.kap_keys = self.kap[sectionKap].keys()
 
@@ -56,7 +56,7 @@ class MesaAccess:
             list(self.controls_keys) + list(self.pgstar_keys) + list(self.star_job_keys)
         )
 
-        if self.mesaVersion >= 15140:
+        if not self.legacyInlist:
             self.default_keys = self.default_keys + (
                 list(self.eos_keys) + list(self.kap_keys)
             )
@@ -65,7 +65,7 @@ class MesaAccess:
         self.fullDict[sectionStarJob] = dict(self.star_job[sectionStarJob])
         self.fullDict[sectionControls] = dict(self.controls[sectionControls])
         self.fullDict[sectionPgStar] = dict(self.pgstar[sectionPgStar])
-        if self.mesaVersion >= 15140:
+        if not self.legacyInlist:
             self.fullDict[sectionEos] = dict(self.eos[sectionEos])
             self.fullDict[sectionKap] = dict(self.kap[sectionKap])
 
@@ -83,21 +83,21 @@ class MesaAccess:
     def values(self):
         return self.nml.values()
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: str):
         try:
             whichSection = self.getSection(key)
         except KeyError:
-            key = self.format_key(key)
+            key = self.formatKey(key)
             whichSection = self.getSection(key)
         _, key, _ = self.checkVector(key)
         return self.nml[whichSection][key]
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: str, value: float):
         # to-do: fix handling of vectors
         try:
             whichSection = self.getSection(key)
         except KeyError:
-            key = self.format_key(key)
+            key = self.formatKey(key)
             whichSection = self.getSection(key)
         section = self.nml[whichSection]
         section_keys = section.keys()
@@ -152,7 +152,7 @@ class MesaAccess:
         else:
             self.nml[whichSection][key] = value
 
-    def __delitem__(self, key) -> None:
+    def __delitem__(self, key: str) -> None:
         _, key, _ = self.checkVector(key)
         if key not in self.default_keys:
             raise KeyError(f"{key} is not a default MESA key.")
@@ -160,7 +160,7 @@ class MesaAccess:
         try:
             whichSection = self.getSection(key)
         except KeyError:
-            key = self.format_key(key)
+            key = self.formatKey(key)
             whichSection = self.getSection(key)
         section = self.nml[whichSection]
         section_keys = section.keys()
@@ -185,10 +185,10 @@ class MesaAccess:
         vectorKeys = sorted(set(vectorKeys))
         for vectorKey in vectorKeys:
             try:
-                whichSection = self.getSection(key)
+                whichSection = self.getSection(vectorKey)
             except KeyError:
-                key = self.format_key(key)
-                whichSection = self.getSection(key)
+                vectorKey = self.formatKey(vectorKey)
+                whichSection = self.getSection(vectorKey)
             nml_idcs = []
             with open(self.infile, "r") as file:
                 for line in file.readlines():
@@ -208,12 +208,12 @@ class MesaAccess:
         with open(self.outfile, "w") as file:
             self.nml.write(file)
 
-    def getDefaults(self, whichDefaults) -> dict:
+    def getDefaults(self, whichDefaults: str) -> dict:
         if self.useMesaenv:
             defaultsDir = self.getDefaultsDir(mesaEnv, whichDefaults)
             pickleDir = Path(__file__).parent / "defaults/"
         else:
-            if self.mesaVersion == 15140:
+            if not self.legacyInlist:
                 defaultsDir = Path(__file__).parent / "defaults/mesa-r15140/"
                 pickleDir = Path(__file__).parent / "defaults/mesa-r15140/"
             else:
@@ -258,7 +258,7 @@ class MesaAccess:
 
         return nml
 
-    def getSection(self, key) -> str:
+    def getSection(self, key: str) -> str:
         _, key, _ = self.checkVector(key)
         if key in self.controls_keys:
             whichSection = sectionControls
@@ -275,11 +275,11 @@ class MesaAccess:
         return whichSection
 
     @staticmethod
-    def format_key(key):
+    def formatKey(key: str):
         return key.lower()
 
     @staticmethod
-    def getDefaultsDir(envVar, whichDefaults) -> str:
+    def getDefaultsDir(envVar: str, whichDefaults: str) -> str:
         try:
             mesaDir = os.environ[envVar]
         except KeyError:
@@ -303,16 +303,17 @@ class MesaAccess:
         return defaultsDir
 
     @staticmethod
-    def checkVector(key) -> Tuple[bool, str, int]:
+    def checkVector(key: str) -> Tuple[bool, str, int]:
         regex = r"(\w*) (\( [0-9]+ \))"
         match = re.search(regex, key, re.VERBOSE)
-        isVector = False
-        vectorKey = key
-        vectorIndex = None
         if match:
             isVector = True
             vectorKey = match.group(1)
             vectorIndex = int(match.group(2)[1:-1])
+        else:
+            isVector = False
+            vectorKey = key
+            vectorIndex = None
         return isVector, vectorKey, vectorIndex
 
 
@@ -320,10 +321,10 @@ if __name__ == "__main__":
     ma = MesaAccess(
         "test/inlist.nml",
         "test/outlist.nml",
-        mesaVersion=10108,
         expandVectors=True,
         reloadDefaults=True,
         useMesaenv=False,
+        legacyInlist=True,
     )
     ma["x_ctrl(6)"] = 6.0
     ma["x_ctrl(8)"] = 8.0

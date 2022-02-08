@@ -7,10 +7,10 @@ class MesaInlist:
     Args:
         infile (str): Name of the inlist to use as a source.
         outfile (str): Name of the output file.
-        mesaVersion (int): MESA release version.
         expandVectors (bool): Expand fortran vectors in the inlist.
         reloadDefaults (bool): Reload default inlist files.
         useMesaenv (bool): Use MESA_ENV environment variable.
+        legacyInlist (bool): Legacy inlist (before mesa-r15140).
 
     Attributes:
 
@@ -19,16 +19,21 @@ class MesaInlist:
 
     def __init__(
         self,
-        infile,
-        outfile,
-        mesaVersion=15140,
-        expandVectors=True,
-        reloadDefaults=False,
-        useMesaenv=True,
+        infile: str,
+        outfile: str,
+        expandVectors: bool = True,
+        reloadDefaults: bool = False,
+        useMesaenv: bool = True,
+        legacyInlist: bool = False,
     ) -> None:
 
         self.inlist = MesaAccess(
-            infile, outfile, mesaVersion, expandVectors, reloadDefaults, useMesaenv
+            infile=infile,
+            outfile=outfile,
+            expandVectors=expandVectors,
+            reloadDefaults=reloadDefaults,
+            useMesaenv=useMesaenv,
+            legacyInlist=legacyInlist,
         )
 
     def writeInlist(self) -> None:
