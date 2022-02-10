@@ -104,24 +104,26 @@ class MesaAccess:
 
         isVector, vectorKey, vectorIndex = self.checkVector(key)
         if vectorKey not in self.default_keys:
-            raise KeyError(f"{vectorKey}is not a default MESA key.")
+            raise KeyError(f"{vectorKey} is not a default MESA key.")
 
         if isVector:
             defaultValue = self.fullDict[whichSection][vectorKey]
-            defaultType = type(defaultValue[0])
+            defaultValue = defaultValue[0]
         else:
             defaultValue = self.fullDict[whichSection][key]
-            defaultType = type(defaultValue)
-
+        defaultType = type(defaultValue)
+        valueType = type(value)
         if not isinstance(value, defaultType):
-            if isinstance(defaultValue, float) and isinstance(value, int):
-                print(f"Warning: defaultValue for {key} is float, but value is int")
-                pass
-            elif isinstance(defaultValue, int) and isinstance(value, float):
-                print(f"Warning: defaultValue for {key} is int, but value is float")
-                pass
+            if (isinstance(defaultValue, float) and isinstance(value, int)) or (
+                isinstance(defaultValue, int) and isinstance(value, float)
+            ):
+                msg = f"Warning: default type for {key} is {defaultType},"
+                msg = msg + f" but value is {valueType}"
+                print(msg)
             else:
-                raise ValueError(value, "is not the same as the default", defaultType)
+                msg = f"default type for {key} is {defaultType},"
+                msg = msg + f" which is not compatible with type {valueType}"
+                raise TypeError(msg)
 
         if isVector and vectorKey in section_keys:
             with open(self.infile, "r") as file:
