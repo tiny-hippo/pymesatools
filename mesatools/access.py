@@ -27,6 +27,7 @@ class MesaAccess:
         reloadDefaults: bool = False,
         useMesaenv: bool = True,
         legacyInlist: bool = False,
+        suppressWarnings: bool = False
     ) -> None:
 
         self.infile = infile
@@ -35,6 +36,7 @@ class MesaAccess:
         self.reloadDefaults = reloadDefaults
         self.useMesaenv = useMesaenv
         self.legacyInlist = legacyInlist
+        self.suppressWarnings = suppressWarnings
         self.nml = f90nml.read(self.infile)
         self.nml.float_format = ".3e"
 
@@ -119,7 +121,8 @@ class MesaAccess:
             ):
                 msg = f"Warning: default type for {key} is {defaultType},"
                 msg = msg + f" but value is {valueType}"
-                print(msg)
+                if not self.suppressWarnings:
+                    print(msg)
             else:
                 msg = f"default type for {key} is {defaultType},"
                 msg = msg + f" which is not compatible with type {valueType}"

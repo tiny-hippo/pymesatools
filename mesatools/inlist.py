@@ -25,6 +25,7 @@ class MesaInlist:
         reloadDefaults: bool = False,
         useMesaenv: bool = True,
         legacyInlist: bool = False,
+        suppressWarnings: bool = False
     ) -> None:
 
         self.inlist = MesaAccess(
@@ -34,6 +35,7 @@ class MesaInlist:
             reloadDefaults=reloadDefaults,
             useMesaenv=useMesaenv,
             legacyInlist=legacyInlist,
+            suppressWarnings=suppressWarnings
         )
 
     def writeInlist(self) -> None:

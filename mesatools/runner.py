@@ -107,6 +107,7 @@ class MesaRunner:
             reloadDefaults=self.reloadDefaults,
             useMesaenv=self.useMesaenv,
             legacyInlist=self.legacyInlist,
+            suppressWarnings=False
         )
         ma = inList.inlist
         self.model_name = ma["save_model_filename"]
@@ -252,6 +253,7 @@ class MesaRunner:
                 reloadDefaults=self.reloadDefaults,
                 useMesaenv=self.useMesaenv,
                 legacyInlist=self.legacyInlist,
+                suppressWarnings=False
             ).inlist
             self.profile_name = ma["filename_for_profile_when_terminate"]
 
