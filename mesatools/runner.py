@@ -130,8 +130,7 @@ class MesaRunner:
         else:
             ma["pgstar_flag"] = False
 
-        if self.pause or self.pgstar:
-            inList.writeInlist()
+        inList.writeInlist()
 
         self.remove_file(self.model_name)
         self.remove_file(self.profile_name)
