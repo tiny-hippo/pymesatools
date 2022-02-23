@@ -5,7 +5,7 @@ import f90nml
 from pathlib import Path
 from collections import OrderedDict
 from typing import Tuple
-from .utils.definitions import *
+from mesatools.utils.definitions import *
 
 
 class MesaAccess:
@@ -27,7 +27,7 @@ class MesaAccess:
         reloadDefaults: bool = False,
         useMesaenv: bool = True,
         legacyInlist: bool = False,
-        suppressWarnings: bool = False
+        suppressWarnings: bool = False,
     ) -> None:
 
         self.infile = infile
@@ -268,19 +268,22 @@ class MesaAccess:
 
     def getSection(self, key: str) -> str:
         _, key, _ = self.checkVector(key)
+        whichSection = None
         if key in self.controls_keys:
             whichSection = sectionControls
         elif key in self.pgstar_keys:
             whichSection = sectionPgStar
         elif key in self.star_job_keys:
             whichSection = sectionStarJob
-        elif key in self.eos_keys:
-            whichSection = sectionEos
-        elif key in self.kap_keys:
-            whichSection = sectionKap
-        else:
+        elif not self.legacyInlist:
+            if key in self.eos_keys:
+                whichSection = sectionEos
+            elif key in self.kap_keys:
+                whichSection = sectionKap
+        if whichSection is None:
             raise KeyError(f"{key} is not a default MESA key.")
-        return whichSection
+        else:
+            return whichSection
 
     @staticmethod
     def formatKey(key: str):
@@ -323,23 +326,3 @@ class MesaAccess:
             vectorKey = key
             vectorIndex = None
         return isVector, vectorKey, vectorIndex
-
-
-if __name__ == "__main__":
-    ma = MesaAccess(
-        "test/inlist.nml",
-        "test/outlist.nml",
-        expandVectors=True,
-        reloadDefaults=True,
-        useMesaenv=False,
-        legacyInlist=True,
-    )
-    ma["x_ctrl(6)"] = 6.0
-    ma["x_ctrl(8)"] = 8.0
-    ma["x_ctrl(7)"] = 0.7
-    ma["x_ctrl(1)"] = 0.1
-    ma["x_logical_ctrl(1)"] = True
-    ma["pgstar_flag"] = False
-    # ma["use_cms"] = False
-    # ma["zbase"] = 0.01
-    ma.writeFile()
