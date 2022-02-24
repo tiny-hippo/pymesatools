@@ -1,9 +1,11 @@
+from imp import reload
 import os
 import glob
+from numpy.typing import ArrayLike
 from mesatools.inlist import MesaInlist
 
 
-def get_X(Z: float):
+def get_X(Z: ArrayLike) -> ArrayLike:
     """Calculates the hydrogen fraction given
         a heavy-element fraction Z and assuming protosolar
         composition.
@@ -23,7 +25,7 @@ def get_X(Z: float):
     return X
 
 
-def get_Y(Z: float):
+def get_Y(Z: ArrayLike) -> ArrayLike:
     """Calculates the helium fraction given
         a heavy-element fraction Z and assuming protosolar
         composition.
@@ -35,10 +37,18 @@ def get_Y(Z: float):
         Y (float): Helium mass fraction
     """
     X = get_X(Z)
-    return round(1 - Z - X, 3)
+    Y = 1 - Z - X
+    return Y
 
 
-def get_latest_log(infile: str, legacyInlist: bool = False):
+def get_latest_log(
+    infile: str,
+    expandVectors: bool = True,
+    reloadDefaults: bool = False,
+    useMesaenv: bool = True,
+    legacyInlist: bool = False,
+    suppressWarnings: bool = False,
+) -> str:
     """Gets the most recent profile filename from the
     LOGS directory.
 
@@ -48,8 +58,12 @@ def get_latest_log(infile: str, legacyInlist: bool = False):
     ma = MesaInlist(
         infile=infile,
         outfile="foo",
+        expandVectors=expandVectors,
+        reloadDefaults=reloadDefaults,
+        useMesaenv=useMesaenv,
         legacyInlist=legacyInlist,
-    ).inlist
+        suppressWarnings=suppressWarnings,
+    )
     try:
         log_prefix = ma["profile_data_prefix"]
     except KeyError:

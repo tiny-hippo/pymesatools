@@ -4,7 +4,7 @@ import pickle
 import f90nml
 from pathlib import Path
 from collections import OrderedDict
-from typing import Tuple
+from typing import Any, Tuple
 from mesatools.utils.definitions import *
 
 
@@ -17,6 +17,7 @@ class MesaAccess:
         reloadDefaults (bool): Reload default inlist files.
         useMesaenv (bool): Use MESA_ENV environment variable.
         legacyInlist (bool): Legacy inlist (before mesa-r15140).
+        suppressWarnings (bool): Suppress type warnings.
     """
 
     def __init__(
@@ -85,7 +86,7 @@ class MesaAccess:
     def values(self):
         return self.nml.values()
 
-    def __getitem__(self, key: str):
+    def __getitem__(self, key: str) -> Any:
         try:
             whichSection = self.getSection(key)
         except KeyError:
@@ -94,8 +95,7 @@ class MesaAccess:
         _, key, _ = self.checkVector(key)
         return self.nml[whichSection][key]
 
-    def __setitem__(self, key: str, value: float):
-        # to-do: fix handling of vectors
+    def __setitem__(self, key: str, value: float) -> None:
         try:
             whichSection = self.getSection(key)
         except KeyError:
@@ -286,7 +286,7 @@ class MesaAccess:
             return whichSection
 
     @staticmethod
-    def formatKey(key: str):
+    def formatKey(key: str) -> str:
         return key.lower()
 
     @staticmethod
