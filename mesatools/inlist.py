@@ -1,3 +1,4 @@
+from typing import Any
 from mesatools.access import MesaAccess
 
 
@@ -25,7 +26,7 @@ class MesaInlist:
         reloadDefaults: bool = False,
         useMesaenv: bool = True,
         legacyInlist: bool = False,
-        suppressWarnings: bool = False
+        suppressWarnings: bool = False,
     ) -> None:
 
         self.inlist = MesaAccess(
@@ -35,8 +36,26 @@ class MesaInlist:
             reloadDefaults=reloadDefaults,
             useMesaenv=useMesaenv,
             legacyInlist=legacyInlist,
-            suppressWarnings=suppressWarnings
+            suppressWarnings=suppressWarnings,
         )
+
+    def __getitem__(self, key: str) -> Any:
+        return self.inlist.__getitem__(key=key)
+
+    def __setitem__(self, key: str, value: float) -> None:
+        self.inlist.__setitem__(key=key, value=value)
+
+    def __delitem__(self, key: str) -> None:
+        self.inlist.__delitem__(key=key)
+
+    def items(self):
+        return self.inlist.items()
+
+    def keys(self):
+        return self.inlist.keys()
+
+    def values(self):
+        return self.inlist.values()
 
     def writeInlist(self) -> None:
         self.inlist.writeFile()

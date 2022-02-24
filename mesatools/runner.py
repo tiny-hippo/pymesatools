@@ -66,7 +66,7 @@ class MesaRunner:
         else:
             self.summary = False
 
-    def run(self, check_age: bool = True):
+    def run(self, check_age: bool = True) -> None:
         """Runs either a single inlist or a list of inlists.
 
         args:
@@ -85,7 +85,7 @@ class MesaRunner:
         else:
             self.run_support(self.inlist, check_age)
 
-    def run_support(self, inlist: str, check_age: bool):
+    def run_support(self, inlist: str, check_age: bool) -> None:
         """Helper function for running MESA.
 
         Args:
@@ -109,27 +109,26 @@ class MesaRunner:
             legacyInlist=self.legacyInlist,
             suppressWarnings=False
         )
-        ma = inList.inlist
-        self.model_name = ma["save_model_filename"]
+        self.model_name = inList["save_model_filename"]
         try:
-            self.profile_name = ma["filename_for_profile_when_terminate"]
+            self.profile_name = inList["filename_for_profile_when_terminate"]
         except KeyError:
             self.profile_name = "profile.data"
 
         try:
-            self.history_name = ma["star_history_name"]
+            self.history_name = inList["star_history_name"]
         except KeyError:
             self.history_name = "history.data"
 
         if self.pause:
-            ma["pause_before_terminate"] = True
+            inList["pause_before_terminate"] = True
         else:
-            ma["pause_before_terminate"] = False
+            inList["pause_before_terminate"] = False
 
         if self.pgstar:
-            ma["pgstar_flag"] = True
+            inList["pgstar_flag"] = True
         else:
-            ma["pgstar_flag"] = False
+            inList["pgstar_flag"] = False
 
         inList.writeInlist()
 
@@ -152,7 +151,7 @@ class MesaRunner:
             if os.path.isfile(self.profile_name):
                 md = mr.MesaData(self.profile_name)
                 star_age = md.star_age
-                max_age = ma["max_age"]
+                max_age = inList["max_age"]
 
                 if star_age < max_age:
                     print(42 * "%")
@@ -207,7 +206,7 @@ class MesaRunner:
                 print(42 * "%")
                 self.convergence = False
 
-    def restart(self, photo: str):
+    def restart(self, photo: str) -> None:
         """Restarts the run from the given photo.
 
         Args:
@@ -222,7 +221,7 @@ class MesaRunner:
         else:
             print(photo_path, "not found")
 
-    def restart_latest(self):
+    def restart_latest(self) -> None:
         """Restarts the run from the latest photo."""
         old_path = os.getcwd()
         new_path = os.path.expanduser("photos")
@@ -239,14 +238,14 @@ class MesaRunner:
         else:
             print("No photo found.")
 
-    def copy_logs(self, dir_name: str):
+    def copy_logs(self, dir_name: str) -> None:
         """Save the current logs and profile.
 
         Args:
             dir_name (str): Destination to copy the logs to.
         """
         if not (self.profile_name):
-            ma = MesaInlist(
+            inList = MesaInlist(
                 infile="inlist",
                 outfile="foo",
                 expandVectors=self.expandVectors,
@@ -255,7 +254,7 @@ class MesaRunner:
                 legacyInlist=self.legacyInlist,
                 suppressWarnings=False
             ).inlist
-            self.profile_name = ma["filename_for_profile_when_terminate"]
+            self.profile_name = inList["filename_for_profile_when_terminate"]
 
         dst = os.path.join(dir_name, self.profile_name)
         copy_tree("LOGS", dir_name)
@@ -263,7 +262,7 @@ class MesaRunner:
             move(self.profile_name, dst)
 
     @staticmethod
-    def make():
+    def make() -> None:
         """Builds the star executable."""
         print("Building star")
         subprocess.call("./mk")
@@ -271,7 +270,7 @@ class MesaRunner:
     @staticmethod
     def cleanup(
         keep_png: bool = False, keep_logs: bool = False, keep_photos: bool = True
-    ):
+    ) -> None:
         """Cleans the photos, png and logs directories.
 
         Args:
@@ -303,7 +302,7 @@ class MesaRunner:
                     os.remove(os.path.join(dir_name, item))
 
     @staticmethod
-    def remove_file(file_name: str):
+    def remove_file(file_name: str) -> None:
         """Safely removes a file.
 
         Args:
