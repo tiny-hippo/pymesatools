@@ -87,20 +87,14 @@ class MesaAccess:
         return self.nml.values()
 
     def __getitem__(self, key: str) -> Any:
-        try:
-            whichSection = self.getSection(key)
-        except KeyError:
-            key = self.formatKey(key)
-            whichSection = self.getSection(key)
+        key = self.formatKey(key)
+        whichSection = self.getSection(key)
         _, key, _ = self.checkVector(key)
         return self.nml[whichSection][key]
 
     def __setitem__(self, key: str, value: float) -> None:
-        try:
-            whichSection = self.getSection(key)
-        except KeyError:
-            key = self.formatKey(key)
-            whichSection = self.getSection(key)
+        key = self.formatKey(key)
+        whichSection = self.getSection(key)
         section = self.nml[whichSection]
         section_keys = section.keys()
 
@@ -158,15 +152,13 @@ class MesaAccess:
             self.nml[whichSection][key] = value
 
     def __delitem__(self, key: str) -> None:
+        key = self.formatKey(key)
+        whichSection = self.getSection(key)
+
         _, key, _ = self.checkVector(key)
         if key not in self.default_keys:
             raise KeyError(f"{key} is not a default MESA key.")
 
-        try:
-            whichSection = self.getSection(key)
-        except KeyError:
-            key = self.formatKey(key)
-            whichSection = self.getSection(key)
         section = self.nml[whichSection]
         section_keys = section.keys()
         if key in section_keys:
