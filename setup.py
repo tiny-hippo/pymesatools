@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="mesatools",
-    version="0.1",
+    version="0.2",
     description="various tools to handle MESA with python",
     url="https://github.com/tiny-hippo/pymesatools",
     author="Simon Müller",
