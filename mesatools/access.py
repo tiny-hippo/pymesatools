@@ -247,7 +247,7 @@ class MesaAccess:
 
             with open(dst, "w") as file:
                 for item in defaults:
-                    file.write("%s\n" % item)
+                    file.write(f"{item}\n")
 
             nml = f90nml.read(dst)
             os.remove(dst)
@@ -285,7 +285,7 @@ class MesaAccess:
         try:
             mesaDir = os.environ[envVar]
         except KeyError:
-            raise OSError("MESA_DIR is not set in your enviroment.")
+            raise OSError("MESA_DIR is not set in your environment.") from None
 
         if not os.path.exists(mesaDir):
             raise FileNotFoundError("MESA directory " + mesaDir + " does not exist.")

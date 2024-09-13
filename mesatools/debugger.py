@@ -93,10 +93,12 @@ class MesaDebugger:
     def make_iter_plot(
         self,
         name,
-        dir=os.path.join(".", "plot_data", "solve_logs"),
+        dir=None,
         min_zone=1,
         max_zone=None,
     ) -> Figure:
+        if dir is None:
+            dir = os.path.join(".", "plot_data", "solve_logs")
         """Wrapper for plot_data.
 
         Args:
