@@ -1,9 +1,10 @@
 import os
-import numpy as np
-import matplotlib.pyplot as plt
 from typing import Tuple
-from numpy.typing import ArrayLike
+
+import matplotlib.pyplot as plt
+import numpy as np
 from matplotlib.figure import Figure
+from numpy.typing import ArrayLike
 
 
 class MesaDebugger:
@@ -18,7 +19,6 @@ class MesaDebugger:
         min_zone: int = 1,
         max_zone: int = None,
     ):
-
         self.name = name
         self.dir = dir
         self.min_zone = min_zone
@@ -110,7 +110,7 @@ class MesaDebugger:
         Returns:
            matplotlib.pyplot.Figure instance
         """
-        self.data_file = os.path.join(dir, "{}.log".format(name))
+        self.data_file = os.path.join(dir, f"{name}.log")
         self.size_file = os.path.join(dir, "size.data")
         self.num_cols, self.num_rows = self.num_columns_rows(self.size_file)
 

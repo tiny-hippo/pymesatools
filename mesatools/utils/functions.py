@@ -1,7 +1,8 @@
-from imp import reload
-import os
 import glob
+import os
+
 from numpy.typing import ArrayLike
+
 from mesatools.inlist import MesaInlist
 
 

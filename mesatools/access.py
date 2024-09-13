@@ -1,10 +1,12 @@
 import os
-import re
 import pickle
-import f90nml
-from pathlib import Path
+import re
 from collections import OrderedDict
+from pathlib import Path
 from typing import Any, Tuple
+
+import f90nml
+
 from mesatools.utils.definitions import *
 
 
@@ -30,7 +32,6 @@ class MesaAccess:
         legacyInlist: bool = False,
         suppressWarnings: bool = False,
     ) -> None:
-
         self.infile = infile
         self.outfile = outfile
         self.expandVectors = expandVectors
@@ -123,7 +124,7 @@ class MesaAccess:
                 raise TypeError(msg)
 
         if isVector and vectorKey in section_keys:
-            with open(self.infile, "r") as file:
+            with open(self.infile) as file:
                 nml_idcs = []
                 for line in file.readlines():
                     if vectorKey in line:
@@ -172,7 +173,7 @@ class MesaAccess:
             return
 
         vectorKeys = []
-        with open(self.infile, "r") as file:
+        with open(self.infile) as file:
             for line in file.readlines():
                 line = line.strip()
                 isVector, vectorKey, vectorIndex = self.checkVector(line)
@@ -187,7 +188,7 @@ class MesaAccess:
                 vectorKey = self.formatKey(vectorKey)
                 whichSection = self.getSection(vectorKey)
             nml_idcs = []
-            with open(self.infile, "r") as file:
+            with open(self.infile) as file:
                 for line in file.readlines():
                     if vectorKey in line:
                         nml_idcs.append(self.checkVector(line)[-1])
@@ -233,12 +234,10 @@ class MesaAccess:
             with open(pickleFile, "rb") as file:
                 nml = pickle.load(file)
         else:
-            with open(src, "r") as file:
+            with open(src) as file:
                 for line in file.readlines():
                     line = line.strip()
-                    if line.startswith("!"):
-                        continue
-                    elif not line:
+                    if line.startswith("!") or not line:
                         continue
                     else:
                         if "num_x_ctrls" in line:
@@ -286,7 +285,7 @@ class MesaAccess:
         try:
             mesaDir = os.environ[envVar]
         except KeyError:
-            raise EnvironmentError("MESA_DIR is not set in your enviroment.")
+            raise OSError("MESA_DIR is not set in your enviroment.")
 
         if not os.path.exists(mesaDir):
             raise FileNotFoundError("MESA directory " + mesaDir + " does not exist.")

@@ -1,12 +1,14 @@
-import os
-import sys
-import glob
-import subprocess
 import datetime
-import numpy as np
-import mesa_reader as mr
-from shutil import copy2, move
+import glob
+import os
+import subprocess
+import sys
 from distutils.dir_util import copy_tree
+from shutil import copy2, move
+
+import mesa_reader as mr
+import numpy as np
+
 from mesatools.inlist import MesaInlist
 
 
@@ -96,7 +98,7 @@ class MesaRunner:
 
         # to-do: implement option to store terminal
         # output in a log file
-        if not self.inlist == "inlist":
+        if self.inlist != "inlist":
             self.remove_file("inlist")
         self.remove_file("restart_photo")
         copy2(self.inlist, "inlist")
@@ -107,7 +109,7 @@ class MesaRunner:
             reloadDefaults=self.reloadDefaults,
             useMesaenv=self.useMesaenv,
             legacyInlist=self.legacyInlist,
-            suppressWarnings=False
+            suppressWarnings=False,
         )
         self.model_name = inList["save_model_filename"]
         try:
@@ -155,15 +157,11 @@ class MesaRunner:
 
                 if star_age < max_age:
                     print(42 * "%")
-                    print(
-                        "Star age is {:.2E}, while max age is {:.2E}".format(
-                            star_age, max_age
-                        )
-                    )
+                    print(f"Star age is {star_age:.2E}, while max age is {max_age:.2E}")
                     print(
                         "Failed to complete",
                         inlist,
-                        "after {} h:mm:ss".format(run_time[:micro_index]),
+                        f"after {run_time[:micro_index]} h:mm:ss",
                     )
                     print(42 * "%")
                     self.convergence = False
@@ -171,7 +169,7 @@ class MesaRunner:
                     print(42 * "%")
                     print(
                         "Evolving the star took:",
-                        "{} h:mm:ss".format(run_time[:micro_index]),
+                        f"{run_time[:micro_index]} h:mm:ss",
                     )
                     print(42 * "%")
                     self.convergence = True
@@ -181,7 +179,7 @@ class MesaRunner:
                 print(
                     "Failed to complete",
                     inlist,
-                    "after {} h:mm:ss".format(run_time[:micro_index]),
+                    f"after {run_time[:micro_index]} h:mm:ss",
                 )
                 print(42 * "%")
                 self.convergence = False
@@ -191,7 +189,7 @@ class MesaRunner:
                 print(42 * "%")
                 print(
                     "Evolving the star took:",
-                    "{} h:mm:ss".format(run_time[:micro_index]),
+                    f"{run_time[:micro_index]} h:mm:ss",
                 )
                 print(42 * "%")
                 self.convergence = True
@@ -201,7 +199,7 @@ class MesaRunner:
                 print(
                     "Failed to complete",
                     inlist,
-                    "after {} h:mm:ss".format(run_time[:micro_index]),
+                    f"after {run_time[:micro_index]} h:mm:ss",
                 )
                 print(42 * "%")
                 self.convergence = False
@@ -252,7 +250,7 @@ class MesaRunner:
                 reloadDefaults=self.reloadDefaults,
                 useMesaenv=self.useMesaenv,
                 legacyInlist=self.legacyInlist,
-                suppressWarnings=False
+                suppressWarnings=False,
             ).inlist
             self.profile_name = inList["filename_for_profile_when_terminate"]
 

@@ -1,4 +1,5 @@
 from typing import Any
+
 from mesatools.access import MesaAccess
 
 
@@ -28,7 +29,6 @@ class MesaInlist:
         legacyInlist: bool = False,
         suppressWarnings: bool = False,
     ) -> None:
-
         self.inlist = MesaAccess(
             infile=infile,
             outfile=outfile,
