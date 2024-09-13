@@ -140,7 +140,7 @@ class MesaAccess:
                 vals[loc] = value
                 for i in range(len(vals)):
                     if not vals[i]:
-                        vals[i] = defaultValue[0]
+                        vals[i] = defaultValue
                 # alternative idea: expand vectors
                 # maybe do this in a pre-processing stage?
                 # for i in range(len(vals)):
