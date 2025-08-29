@@ -36,6 +36,7 @@ class MesaRunner:
         expandVectors: bool = True,
         reloadDefaults: bool = False,
         useMesaenv: bool = True,
+        path_to_star: str = "./star",
         legacyInlist: bool = True,
     ):
         """__init__ method
@@ -54,6 +55,7 @@ class MesaRunner:
         self.expandVectors = expandVectors
         self.reloadDefaults = reloadDefaults
         self.useMesaenv = useMesaenv
+        self.path_to_star = path_to_star
         self.legacyInlist = legacyInlist
         self.pause = pause
         self.pgstar = pgstar
@@ -138,9 +140,9 @@ class MesaRunner:
         self.remove_file(self.profile_name)
 
         start_time = datetime.datetime.now()
-        if os.path.isfile("star"):
+        if os.path.isfile(self.path_to_star):
             print("Running", inlist)
-            subprocess.call("./star")
+            subprocess.call(self.path_to_star)
         else:
             print("You need to build star first!")
             sys.exit()
